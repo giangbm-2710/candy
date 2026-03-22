@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bảng Giá Tiệc Bánh Trà</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 30%, #fff1f2 60%, #fef3c7 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ===== HEADER ===== */
+    .header {
+      text-align: center;
+      padding: 48px 20px 12px;
+    }
+    .header .label {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #be185d;
+    }
+    .header .label::before,
+    .header .label::after {
+      content: '';
+      width: 40px;
+      height: 1.5px;
+      background: linear-gradient(90deg, transparent, #f472b6, transparent);
+    }
+    .header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(28px, 5vw, 44px);
+      font-weight: 700;
+      color: #1e293b;
+      margin: 12px 0 8px;
+      line-height: 1.2;
+    }
+    .header p {
+      font-size: 15px;
+      color: #64748b;
+      font-style: italic;
+    }
+
+    /* ===== NAV DOTS + ARROWS ===== */
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 16px 20px 8px;
+    }
+    .nav-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid #f9a8d4;
+      background: white;
+      color: #be185d;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      flex-shrink: 0;
+    }
+    .nav-btn:hover {
+      background: #be185d;
+      color: white;
+      transform: scale(1.1);
+    }
+    .dots {
+      display: flex;
+      gap: 10px;
+    }
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 2px solid #f9a8d4;
+      background: white;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .dot.active {
+      background: linear-gradient(135deg, #ec4899, #f43f5e);
+      border-color: #ec4899;
+      transform: scale(1.2);
+      box-shadow: 0 0 8px rgba(236, 72, 153, 0.4);
+    }
+    .counter {
+      font-size: 14px;
+      font-weight: 600;
+      color: #be185d;
+      min-width: 50px;
+      text-align: center;
+    }
+
+    /* ===== SCROLL CONTAINER ===== */
+    .scroll-wrapper {
+      position: relative;
+      padding: 8px 0 0;
+    }
+    .scroll-container {
+      display: flex;
+      gap: 28px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      padding: 20px calc((100vw - min(420px, 90vw)) / 2) 32px;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+      cursor: grab;
+    }
+    .scroll-container:active { cursor: grabbing; }
+    .scroll-container::-webkit-scrollbar { display: none; }
+
+    /* ===== CARD ===== */
+    .card {
+      flex: 0 0 min(420px, 90vw);
+      scroll-snap-align: center;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+      transition: transform 0.4s, box-shadow 0.4s;
+      position: relative;
+      background: white;
+    }
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.06);
+    }
+
+    /* Badge */
+    .card .badge {
+      position: absolute;
+      top: 16px;
+      right: -8px;
+      padding: 6px 20px 6px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: white;
+      border-radius: 6px 0 0 6px;
+      z-index: 2;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .card .badge::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      bottom: -8px;
+      border: 4px solid transparent;
+    }
+
+    /* Card Header */
+    .card-header {
+      padding: 32px 28px 24px;
+      text-align: center;
+      position: relative;
+    }
+    .card-header .icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      margin: 0 auto 16px;
+    }
+    .card-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 4px;
+    }
+    .card-header .subtitle {
+      font-size: 13px;
+      color: #94a3b8;
+    }
+
+    /* Price */
+    .price-box {
+      margin: 16px 28px;
+      padding: 16px;
+      border-radius: 16px;
+      text-align: center;
+    }
+    .price-box .price {
+      font-family: 'Playfair Display', serif;
+      font-size: 42px;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .price-box .unit {
+      font-size: 14px;
+      font-weight: 500;
+      margin-top: 4px;
+    }
+
+    /* Sections */
+    .card-body {
+      padding: 0 28px 28px;
+    }
+    .section {
+      margin-bottom: 20px;
+    }
+    .section:last-child { margin-bottom: 0; }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 16px;
+      font-weight: 600;
+      font-style: italic;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1.5px dashed;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title .emoji { font-style: normal; }
+    .item-list {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 0;
+    }
+    .item-list li {
+      width: 100%;
+      font-size: 13px;
+      color: #475569;
+      padding-left: 20px;
+      position: relative;
+      line-height: 1.6;
+    }
+    .item-list li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    /* Summary */
+    .summary {
+      margin: 0 28px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: #fefce8;
+      border: 1px dashed #fbbf24;
+      margin-bottom: 20px;
+    }
+    .summary p {
+      font-size: 13px;
+      color: #92400e;
+      font-style: italic;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    /* Footer Notes */
+    .card-footer {
+      padding: 16px 28px 24px;
+      border-top: 1px solid #f1f5f9;
+      text-align: center;
+    }
+    .card-footer p {
+      font-size: 11px;
+      color: #94a3b8;
+      line-height: 1.7;
+    }
+    .card-footer .phone {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #be185d;
+      text-decoration: none;
+    }
+
+    /* CTA */
+    .cta-btn {
+      display: block;
+      margin: 0 28px 24px;
+      padding: 14px;
+      border: none;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      color: white;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      transition: all 0.3s;
+      letter-spacing: 0.5px;
+    }
+    .cta-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+
+    /* ===== CARD 1: 50K — Rose Pink ===== */
+    .card-50k .card-header { background: linear-gradient(135deg, #fff1f2, #ffe4e6); }
+    .card-50k .icon { background: #ffe4e6; }
+    .card-50k .price-box { background: linear-gradient(135deg, #fff1f2, #fce7f3); }
+    .card-50k .price-box .price { color: #e11d48; }
+    .card-50k .price-box .unit { color: #fb7185; }
+    .card-50k .section-title { color: #be123c; border-color: #fda4af; }
+    .card-50k .item-list li::before { color: #e11d48; }
+    .card-50k .cta-btn { background: linear-gradient(135deg, #e11d48, #f43f5e); }
+    .card-50k .badge { background: linear-gradient(135deg, #e11d48, #f43f5e); }
+    .card-50k .badge::after { border-top-color: #9f1239; }
+
+    /* ===== CARD 2: 75K — Emerald Green ===== */
+    .card-75k .card-header { background: linear-gradient(135deg, #ecfdf5, #d1fae5); }
+    .card-75k .icon { background: #d1fae5; }
+    .card-75k .price-box { background: linear-gradient(135deg, #ecfdf5, #d1fae5); }
+    .card-75k .price-box .price { color: #059669; }
+    .card-75k .price-box .unit { color: #34d399; }
+    .card-75k .section-title { color: #047857; border-color: #6ee7b7; }
+    .card-75k .item-list li::before { color: #059669; }
+    .card-75k .cta-btn { background: linear-gradient(135deg, #059669, #10b981); }
+    .card-75k .badge { background: linear-gradient(135deg, #059669, #10b981); }
+    .card-75k .badge::after { border-top-color: #065f46; }
+
+    /* ===== CARD 3: 100K — Indigo Purple ===== */
+    .card-100k .card-header { background: linear-gradient(135deg, #eef2ff, #e0e7ff); }
+    .card-100k .icon { background: #e0e7ff; }
+    .card-100k .price-box { background: linear-gradient(135deg, #eef2ff, #e0e7ff); }
+    .card-100k .price-box .price { color: #4f46e5; }
+    .card-100k .price-box .unit { color: #818cf8; }
+    .card-100k .section-title { color: #4338ca; border-color: #a5b4fc; }
+    .card-100k .item-list li::before { color: #4f46e5; }
+    .card-100k .cta-btn { background: linear-gradient(135deg, #4f46e5, #6366f1); }
+    .card-100k .badge { background: linear-gradient(135deg, #4f46e5, #6366f1); }
+    .card-100k .badge::after { border-top-color: #3730a3; }
+
+    /* ===== SCROLL HINT ===== */
+    .scroll-hint {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 0 4px;
+      font-size: 13px;
+      color: #94a3b8;
+      animation: fadeInOut 4s ease-in-out forwards;
+    }
+    .scroll-hint .hand {
+      display: inline-block;
+      animation: swipeHint 1.5s ease-in-out infinite;
+    }
+    @keyframes swipeHint {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(12px); }
+    }
+    @keyframes fadeInOut {
+      0% { opacity: 0; }
+      15% { opacity: 1; }
+      70% { opacity: 1; }
+      100% { opacity: 0; pointer-events: none; }
+    }
+
+    /* ===== BOTTOM CONTACT BAR ===== */
+    .contact-bar {
+      margin: 20px auto 40px;
+      max-width: 600px;
+      padding: 20px;
+      text-align: center;
+    }
+    .contact-bar .notes {
+      font-size: 12px;
+      color: #94a3b8;
+      line-height: 1.8;
+      margin-bottom: 16px;
+    }
+    .contact-bar .phone-big {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 36px;
+      background: linear-gradient(135deg, #ec4899, #f43f5e);
+      color: white;
+      border-radius: 60px;
+      font-size: 18px;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 0 6px 24px rgba(236, 72, 153, 0.3);
+      transition: all 0.3s;
+    }
+    .contact-bar .phone-big:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 10px 32px rgba(236, 72, 153, 0.4);
+    }
+
+    /* ===== PROGRESS BAR ===== */
+    .progress-bar-wrap {
+      max-width: 200px;
+      margin: 0 auto;
+      height: 3px;
+      background: #fce7f3;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #ec4899, #f43f5e);
+      transition: width 0.3s;
+      width: 33.33%;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 480px) {
+      .header { padding: 32px 16px 8px; }
+      .header h1 { font-size: 26px; }
+      .scroll-container {
+        gap: 20px;
+        padding: 16px calc((100vw - 88vw) / 2) 24px;
+      }
+      .card { flex: 0 0 88vw; border-radius: 20px; }
+      .card-header { padding: 24px 20px 20px; }
+      .card-body { padding: 0 20px 20px; }
+      .price-box { margin: 12px 20px; }
+      .summary { margin: 0 20px; margin-bottom: 16px; }
+      .cta-btn { margin: 0 20px 20px; }
+      .card-footer { padding: 14px 20px 20px; }
+      .nav-btn { width: 36px; height: 36px; font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="label">Bảng Giá</div>
+    <h1>Gói Dịch Vụ Tiệc Bánh Trà</h1>
+    <p>Linh hoạt theo nhu cầu — Báo giá chi tiết khi liên hệ</p>
+  </div>
+
+  <!-- NAV -->
+  <div class="nav-controls">
+    <button class="nav-btn" id="prevBtn" onclick="scrollToCard(-1)">‹</button>
+    <div class="dots">
+      <div class="dot active" onclick="goToCard(0)"></div>
+      <div class="dot" onclick="goToCard(1)"></div>
+      <div class="dot" onclick="goToCard(2)"></div>
+    </div>
+    <button class="nav-btn" id="nextBtn" onclick="scrollToCard(1)">›</button>
+    <span class="counter" id="counter">1 / 3</span>
+  </div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressFill"></div>
+  </div>
+
+  <!-- SCROLL HINT -->
+  <div class="scroll-hint">
+    <span class="hand">👉</span> Vuốt để xem thêm gói
+  </div>
+
+  <!-- CARDS -->
+  <div class="scroll-wrapper">
+    <div class="scroll-container" id="scrollContainer">
+
+      <!-- ========== CARD 50K ========== -->
+      <div class="card card-50k" data-index="0">
+        <span class="badge">Tiết kiệm</span>
+        <div class="card-header">
+          <div class="icon">🌸</div>
+          <h2>Menu Teabreak</h2>
+          <div class="subtitle">Gói cơ bản — Phù hợp tiệc nhỏ</div>
+        </div>
+        <div class="price-box">
+          <div class="price">50K</div>
+          <div class="unit">/ khách</div>
+        </div>
+        <div class="card-body">
+          <!-- Hoa quả -->
+          <div class="section">
+            <div class="section-title"><span class="emoji">🍉</span> Hoa quả tươi (150g/suất)</div>
+            <ul class="item-list">
+              <li>Dưa hấu / Dưa lưới</li>
+              <li>Dứa chín / Thanh long</li>
+              <li>Roi / Nho</li>
+              <li>Ổi, Xoài</li>
+            </ul>
+          </div>
+          <!-- Bánh -->
+          <div class="section">
+            <div class="section-title"><span class="emoji">🧁</span> Bánh (2 bánh/suất)</div>
+            <ul class="item-list">
+              <li>Bánh Petiit Choco</li>
+              <li>Bánh Petit Matcha / Hoa quả</li>
+              <li>Bông lan cuộn</li>
+              <li>Bánh Sukem</li>
+              <li>Bông lan trứng muối</li>
+            </ul>
+          </div>
+          <!-- Đồ uống -->
+          <div class="section">
+            <div class="section-title"><span class="emoji">🥤</span> Đồ uống (200ml/suất)</div>
+            <ul class="item-list">
+              <li>Cà phê</li>
+              <li>Trà đào cam sả / Trà cam chanh dây nhiệt đới</li>
+              <li>Trà Lipton nóng</li>
+            </ul>
+          </div>
+        </div>
+        <div class="summary">
+          <p>50k/suất gồm: Hoa quả (150g) · Bánh (2 bánh) · Đồ uống (2 loại, 200ml)</p>
+        </div>
+        <a href="tel:0969166453" class="cta-btn">📞 Đặt Ngay</a>
+        <div class="card-footer">
+          <p>*Đã bao gồm dụng cụ tiệc, nhân sự setup.<br>*Dịch vụ chưa bao gồm: Thuế VAT, phí vận chuyển và bàn kê tiệc.</p>
+          <a href="tel:0969166453" class="phone">📱 0969 166 453</a>
+        </div>
+      </div>
+
+      <!-- ========== CARD 75K ========== -->
+      <div class="card card-75k" data-index="1">
+        <span class="badge">⭐ Phổ biến</span>
+        <div class="card-header">
+          <div class="icon">👑</div>
+          <h2>Menu Teabreak</h2>
+          <div class="subtitle">Gói phổ biến — Đa dạng & đầy đủ</div>
+        </div>
+        <div class="price-box">
+          <div class="price">75K</div>
+          <div class="unit">/ khách</div>
+        </div>
+        <div class="card-body">
+          <!-- Hoa quả -->
+          <div class="section">
+            <div class="section-title"><span class="emoji">🍉</span> Hoa quả tươi (150g/suất)</div>
+            <ul class="item-list">
+              <li>Dưa hấu / Dưa lưới</li>
+              <li>Dứa chín / Thanh long</li>
+              <li>Roi / Nho</li>
+              <li>Ổi, Xoài</li>
+              <li>Bưởi da xanh / Táo</li>
+            </ul>
+          </div>
+          <!-- Bánh ngọt -->
+          <div class="section">
+            <div class="section-title"><span class="emoji">🧁</span> Bánh ngọt (2 bánh/suất)</div>
+            <ul class="item-list">
+              <li>Bánh Pettit Matcha / Choco</li>
+              <li>Bánh Mousse</li>
+              <li>Tiramisu</li>
+              <li>Red Velvet</li>
+              <li>Bánh Sukem</li>
+              <li>Bông lan cuộn</li>
+              <li>Su sing hoa quả</li>
+            </ul>
+          </div>
+          <!-- Bánh mặn -->
+          <div class="section">
+            <div class="section-title"><span class="emoji">🥐</span> Bánh mặn (1 bánh/suất)</div>
+            <ul class="item-list">
+              <li>Bánh sừng bò trứng muối</li>
+              <li>Bông lan trứng muối</li>
+            </ul>
+          </div>
+          <!-- Đồ uống -->
+          <div class="section">
+            <div class="section-title"><span class="emoji">🥤</span> Đồ uống (220ml/suất)</div>
+            <ul class="item-list">
+              <li>Nước hoa quả</li>
+              <li>Cà phê</li>
+              <li>Trà đào cam sả / Trà cam chanh</li>
+              <li>Trà Lipton nóng</li>
+            </ul>
+          </div>
+        </div>
+        <div class="summary">
+          <p>75k/suất gồm: Hoa quả (150g) · Bánh (3 bánh) · Đồ uống (220ml)</p>
+        </div>
+        <a href="tel:0969166453" class="cta-btn">📞 Đặt Ngay</a>
+        <div class="card-footer">
+          <p>*Đã bao gồm dụng cụ tiệc, nhân sự setup.<br>*Dịch vụ chưa bao gồm: Thuế VAT, phí vận chuyển và bàn kê tiệc.</p>
+          <a href="tel:0969166453" class="phone">📱 0969 166 453</a>
+        </div>
+      </div>
+
+      <!-- ========== CARD 100K ========== -->
+      <div class="card card-100k" data-index="2">
+        <span class="badge">Cao cấp</span>
+        <div class="card-header">
+          <div class="icon">💎</div>
+          <h2>Menu Teabreak</h2>
+          <div class="subtitle">Gói cao cấp — Đẳng cấp & chuyên nghiệp</div>
+        </div>
+        <div class="price-box">
+          <div class="price">100K</div>
+          <div class="unit">/ khách</div>
+        </div>
+        <div class="card-body">
+          <!-- Hoa quả -->
+          <div class="section">
+            <div class="section-title"><span class="emoji">🍉</span> Hoa quả tươi (150g/suất)</div>
+            <ul class="item-list">
+              <li>Dưa hấu / Dưa lưới</li>
+              <li>Dứa chín / Thanh long</li>
+              <li>Roi / Nho</li>
+              <li>Ổi, Xoài</li>
+              <li>Bưởi da xanh / Táo</li>
+            </ul>
+          </div>
+          <!-- Bánh ngọt -->
+          <div class="section">
+            <div class="section-title"><span class="emoji">🧁</span> Bánh ngọt (3 bánh/suất)</div>
+            <ul class="item-list">
+              <li>Bánh Pettit Hoa quả</li>
+              <li>Pettit Matcha / Choco</li>
+              <li>Bánh Mousse</li>
+              <li>Tiramisu</li>
+              <li>Red Velvet</li>
+              <li>Bánh Sukem</li>
+              <li>Su sing hoa quả</li>
+              <li>Bánh táo ngàn lớp</li>
+              <li>Tart chanh dây / Hoa quả</li>
+            </ul>
+          </div>
+          <!-- Bánh mặn -->
+          <div class="section">
+            <div class="section-title"><span class="emoji">🥐</span> Bánh mặn (1 bánh/suất)</div>
+            <ul class="item-list">
+              <li>Bánh sừng bò trứng muối</li>
+              <li>Bông lan trứng muối</li>
+              <li>Sandwich mini</li>
+            </ul>
+          </div>
+          <!-- Đồ uống -->
+          <div class="section">
+            <div class="section-title"><span class="emoji">🥤</span> Đồ uống (220ml/suất)</div>
+            <ul class="item-list">
+              <li>Nước hoa quả</li>
+              <li>Cà phê</li>
+              <li>Trà đào cam sả / Trà cam chanh</li>
+              <li>Trà Lipton nóng</li>
+            </ul>
+          </div>
+        </div>
+        <div class="summary">
+          <p>100k/suất gồm: Hoa quả (150g) · Bánh (4 bánh) · Đồ uống (220ml)</p>
+        </div>
+        <a href="tel:0969166453" class="cta-btn">📞 Đặt Ngay</a>
+        <div class="card-footer">
+          <p>*Đã bao gồm dụng cụ tiệc, nhân sự setup.<br>*Dịch vụ chưa bao gồm: Thuế VAT, phí vận chuyển và bàn kê tiệc.</p>
+          <a href="tel:0969166453" class="phone">📱 0969 166 453</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CONTACT BAR -->
+  <div class="contact-bar">
+    <div class="notes">
+      *Đã bao gồm dụng cụ tiệc, nhân sự setup.<br>
+      *Dịch vụ chưa bao gồm: Thuế VAT, phí vận chuyển và bàn kê tiệc.
+    </div>
+    <a href="tel:0969166453" class="phone-big">📞 Gọi ngay: 0969 166 453</a>
+  </div>
+
+  <script>
+    const container = document.getElementById('scrollContainer');
+    const dots = document.querySelectorAll('.dot');
+    const counterEl = document.getElementById('counter');
+    const progressFill = document.getElementById('progressFill');
+    const cards = document.querySelectorAll('.card');
+    const total = cards.length;
+    let currentIndex = 0;
+
+    // Update UI
+    function updateUI() {
+      const scrollLeft = container.scrollLeft;
+      const cardWidth = cards[0].offsetWidth + 28; // gap
+      currentIndex = Math.round(scrollLeft / cardWidth);
+      currentIndex = Math.max(0, Math.min(currentIndex, total - 1));
+
+      dots.forEach((d, i) => d.classList.toggle('active', i === currentIndex));
+      counterEl.textContent = `${currentIndex + 1} / ${total}`;
+      progressFill.style.width = `${((currentIndex + 1) / total) * 100}%`;
+    }
+
+    container.addEventListener('scroll', updateUI);
+
+    function goToCard(index) {
+      const cardWidth = cards[0].offsetWidth + 28;
+      container.scrollTo({ left: index * cardWidth, behavior: 'smooth' });
+    }
+
+    function scrollToCard(dir) {
+      const next = Math.max(0, Math.min(currentIndex + dir, total - 1));
+      goToCard(next);
+    }
+
+    // Keyboard
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') scrollToCard(-1);
+      if (e.key === 'ArrowRight') scrollToCard(1);
+    });
+
+    // Drag to scroll
+    let isDown = false, startX, scrollLeftStart;
+    container.addEventListener('mousedown', (e) => {
+      isDown = true;
+      container.style.cursor = 'grabbing';
+      startX = e.pageX - container.offsetLeft;
+      scrollLeftStart = container.scrollLeft;
+    });
+    container.addEventListener('mouseleave', () => { isDown = false; container.style.cursor = 'grab'; });
+    container.addEventListener('mouseup', () => { isDown = false; container.style.cursor = 'grab'; });
+    container.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - container.offsetLeft;
+      const walk = (x - startX) * 1.5;
+      container.scrollLeft = scrollLeftStart - walk;
+    });
+
+    // Touch swipe hint auto-hide handled by CSS animation
+  </script>
+</body>
+</html>
