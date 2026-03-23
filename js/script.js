@@ -79,8 +79,8 @@ const INITIAL_PAGE_SIZE = 12;  // Nhỏ hơn để tải nhanh hơn
 const MORE_PAGE_SIZE = 24;
 
 const allImages = validImageIds.map((id, i) => ({
-    src: `imgs/banh (${id}).jpg`,
-    alt: `Tiệc Lưu Động Candy - Ảnh ${id}`,
+    src: `imgs/tiec-teabreak-ha-noi-candy-${id}.jpg`,
+    alt: `Hình ảnh tiệc teabreak bánh trà sự kiện tại Hà Nội - Candy ${id}`,
     category: CATEGORIES[i % CATEGORIES.length],
     index: i
 }));
