@@ -2634,46 +2634,46 @@ body {
     border-top-color: #065f46;
 }
 
-/* ===== CARD 3: 100K — Indigo Purple ===== */
-.card-100k .s4-card-header {
-    background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+/* ===== CARD 2: 55K — Warm Amber ===== */
+.card-55k .s4-card-header {
+    background: linear-gradient(135deg, #fffbeb, #fef3c7);
 }
 
-.card-100k .s4-icon {
-    background: #e0e7ff;
+.card-55k .s4-icon {
+    background: #fef3c7;
 }
 
-.card-100k .s4-price-box {
-    background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+.card-55k .s4-price-box {
+    background: linear-gradient(135deg, #fffbeb, #fef3c7);
 }
 
-.card-100k .s4-price-box .s4-price {
-    color: #4f46e5;
+.card-55k .s4-price-box .s4-price {
+    color: #d97706;
 }
 
-.card-100k .s4-price-box .s4-unit {
-    color: #818cf8;
+.card-55k .s4-price-box .s4-unit {
+    color: #f59e0b;
 }
 
-.card-100k .s4-section-title {
-    color: #4338ca;
-    border-color: #a5b4fc;
+.card-55k .s4-section-title {
+    color: #b45309;
+    border-color: #fbbf24;
 }
 
-.card-100k .s4-item-list li::before {
-    color: #4f46e5;
+.card-55k .s4-item-list li::before {
+    color: #d97706;
 }
 
-.card-100k .s4-cta-btn {
-    background: linear-gradient(135deg, #4f46e5, #6366f1);
+.card-55k .s4-cta-btn {
+    background: linear-gradient(135deg, #d97706, #f59e0b);
 }
 
-.card-100k .s4-badge {
-    background: linear-gradient(135deg, #4f46e5, #6366f1);
+.card-55k .s4-badge {
+    background: linear-gradient(135deg, #d97706, #f59e0b);
 }
 
-.card-100k .s4-badge::after {
-    border-top-color: #3730a3;
+.card-55k .s4-badge::after {
+    border-top-color: #92400e;
 }
 
 /* ===== SCROLL HINT ===== */
